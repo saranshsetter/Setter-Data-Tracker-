@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Setter Outbound Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f7;--card:#fff;--ink:#14202b;--mut:#66727e;--line:#dde3e8;--acc:#0a7d6b;--accbg:#d9f1ec;--bad:#c4402f}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1519;--card:#18212a;--ink:#e8eef2;--mut:#8b99a5;--line:#2a3640;--acc:#3fd1b6;--accbg:#12342f;--bad:#ff7a69}}
+:root[data-theme="dark"]{--bg:#0f1519;--card:#18212a;--ink:#e8eef2;--mut:#8b99a5;--line:#2a3640;--acc:#3fd1b6;--accbg:#12342f;--bad:#ff7a69}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif;padding-top:env(safe-area-inset-top,0);padding-bottom:env(safe-area-inset-bottom,0)}
+main{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1,h2{font-family:'Bricolage Grotesque',Inter,sans-serif;margin:0}
+h1{font-size:28px}h2{font-size:18px}
+.sub{color:var(--mut);margin:2px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+input[type=date],input[type=text]{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.ctr{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px}
+.c{border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.c label{display:block;color:var(--mut);font-size:13px;font-weight:500}
+.c .v{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px}
+.c input{width:64px;text-align:center;font:700 24px 'Bricolage Grotesque',Inter,sans-serif;border:0;background:transparent;color:var(--ink);-moz-appearance:textfield}
+.c input::-webkit-inner-spin-button{-webkit-appearance:none}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:6px 12px}
+.c button{width:34px;height:34px;padding:0;font-size:18px}
+.c.main button.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.pills button{border-radius:999px;padding:6px 14px}
+.pills button.on,.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.pills .add{border-style:dashed;color:var(--acc)}
+.lbl{color:var(--mut);font-size:13px;font-weight:500;margin:14px 0 6px}
+.link{border:0;background:none;color:var(--mut);padding:2px 6px;font-size:13px;text-decoration:underline}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.k{background:var(--accbg);border-radius:10px;padding:12px}
+.k b{display:block;font:700 26px 'Bricolage Grotesque',Inter,sans-serif}
+.k span{color:var(--mut);font-size:13px}
+.fun div{display:grid;grid-template-columns:70px 1fr 56px;gap:10px;align-items:center;margin:8px 0;font-size:14px}
+.bar{height:14px;background:var(--bg);border-radius:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:7px}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}th{color:var(--mut);font-weight:500}
+td.l,th.l{text-align:left}
+td button{padding:2px 8px;color:var(--bad)}
+.empty{color:var(--mut);padding:10px 0}
+.msg{color:var(--acc);font-size:13px;min-height:18px}
+</style>
+</head>
+<body>
+<main>
+<h1>Setter outbound tracker</h1>
+<p class="sub">Track every offer you set for, side by side. Everything saves automatically in this browser.</p>
+
+<section class="card">
+  <div class="row between"><h2>Log activity</h2><div class="row"><input type="date" id="date" aria-label="Date"><span class="msg" id="msg"></span></div></div>
+  <div class="lbl">Offer</div>
+  <div class="row pills" id="offers"></div>
+  <div class="ctr" id="ctr"></div>
+</section>
+
+<section class="card">
+  <div class="row between"><h2>Performance</h2><div class="row tabs" id="tabs"></div></div>
+  <div class="row pills" id="view" style="margin-top:12px"></div>
+  <div class="kpis" id="kpis" style="margin-top:14px"></div>
+  <div class="fun" id="fun" style="margin-top:14px"></div>
+</section>
+
+<section class="card" id="cmpCard">
+  <h2 style="margin-bottom:12px">Offer comparison</h2>
+  <div class="wrap"><table id="cmp"></table></div>
+</section>
+
+<section class="card">
+  <h2 style="margin-bottom:12px">History</h2>
+  <div class="wrap"><table id="tbl"></table></div>
+</section>
+
+<section class="card">
+  <div class="row between"><h2>Backup</h2>
+  <div class="row"><button id="exp">Export JSON</button><button id="expcsv">Export CSV</button><button id="imp">Import JSON</button><input type="file" id="file" accept="application/json,.json" hidden></div></div>
+  <p class="sub" style="margin:8px 0 0">Data lives in this browser only. Export now and then so you never lose your proof.</p>
+</section>
+</main>
+<script>
+const F=[['d','Dials'],['p','Pickups'],['q','DQ'],['t','Pitches'],['s','Sets']];
+const KEY='setter-tracker-v2',OLD='setter-tracker-v1';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>'o'+Math.random().toString(36).slice(2,8);
+// data: {offers:[{id,name}], active:id, days:{date:{offerId:{d,p,q,t,s}}}}
+let data=null,range=7,view='all';
+function load(){
+  try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&v.offers&&v.days)return v}catch(e){}
+  const id=uid(),n={offers:[{id,name:'My first offer'}],active:id,days:{}};
+  try{const o=JSON.parse(localStorage.getItem(OLD)||'{}');for(const k in o)n.days[k]={[id]:o[k]}}catch(e){} // migrate v1 data
+  return n;
+}
+data=load();
+const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+$('date').value=today();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));$('msg').textContent='Saved'}catch(e){$('msg').textContent='Could not save in this browser'}}
+const offer=id=>data.offers.find(o=>o.id===id);
+const blank=()=>({d:0,p:0,q:0,t:0,s:0});
+const cur=()=>(data.days[$('date').value]||{})[data.active]||blank();
+function set(k,v){const dt=$('date').value;data.days[dt]=data.days[dt]||{};const e={...cur()};e[k]=Math.max(0,parseInt(v)||0);data.days[dt][data.active]=e;save();render()}
+function drawCtr(){
+  $('ctr').innerHTML=F.map(([k,n])=>`<div class="c ${k=='s'?'main':''}"><label for="i${k}">${n}</label><div class="v">
+  <button data-k="${k}" data-s="-1" aria-label="Minus one ${n}">−</button>
+  <input id="i${k}" type="number" min="0" inputmode="numeric" data-k="${k}" value="${cur()[k]}">
+  <button class="p" data-k="${k}" data-s="1" aria-label="Plus one ${n}">+</button></div></div>`).join('');
+}
+function drawOffers(){
+  $('offers').innerHTML=data.offers.map(o=>`<button data-o="${o.id}" class="${o.id===data.active?'on':''}">${esc(o.name)}</button>`).join('')
+   +`<button class="add" data-act="new">+ New offer</button><button class="link" data-act="ren">Rename</button>`+(data.offers.length>1?`<button class="link" data-act="del">Delete</button>`:'');
+  if(view!=='all'&&!offer(view))view='all';
+  $('view').innerHTML=[['all','All offers'],...data.offers.map(o=>[o.id,o.name])].map(([id,n])=>`<button data-v="${id}" class="${id===view?'on':''}">${esc(n)}</button>`).join('');
+}
+$('ctr').onclick=e=>{const b=e.target.closest('button');if(b)set(b.dataset.k,cur()[b.dataset.k]+ +b.dataset.s)};
+$('ctr').onchange=e=>{if(e.target.dataset.k)set(e.target.dataset.k,e.target.value)};
+$('date').onchange=()=>{$('msg').textContent='';render()};
+$('offers').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.o){data.active=b.dataset.o;view=b.dataset.o;save();render();return}
+  const a=b.dataset.act;
+  if(a==='new'){const n=(prompt('Name this offer (e.g. "Solar – Acme", "Coaching – Dan")')||'').trim();if(n){const id=uid();data.offers.push({id,name:n.slice(0,40)});data.active=id;view=id;save();render()}}
+  if(a==='ren'){const o=offer(data.active),n=(prompt('Rename offer',o.name)||'').trim();if(n){o.name=n.slice(0,40);save();render()}}
+  if(a==='del'){const o=offer(data.active);if(confirm(`Delete "${o.name}" and all of its numbers? This can't be undone.`)){
+    data.offers=data.offers.filter(x=>x.id!==o.id);for(const k in data.days){delete data.days[k][o.id];if(!Object.keys(data.days[k]).length)delete data.days[k]}
+    data.active=data.offers[0].id;view='all';save();render()}}
+};
+$('view').onclick=e=>{const b=e.target.closest('button');if(b){view=b.dataset.v;render()}};
+const R=[[1,'Today'],[7,'7 days'],[30,'30 days'],[0,'All']];
+$('tabs').innerHTML=R.map(([n,l])=>`<button data-r="${n}">${l}</button>`).join('');
+$('tabs').onclick=e=>{const b=e.target.closest('button');if(b){range=+b.dataset.r;render()}};
+$('tbl').onclick=e=>{const b=e.target.closest('button');if(!b)return;const[dt,id]=b.dataset.del.split('|');
+  if(confirm(`Delete ${dt} (${offer(id).name})?`)){delete data.days[dt][id];if(!Object.keys(data.days[dt]).length)delete data.days[dt];save();render()}};
+const pct=(a,b)=>b?Math.round(a/b*1000)/10+'%':'–';
+const sum=rows=>{const T=blank();rows.forEach(r=>F.forEach(([f])=>T[f]+=r.e[f]||0));return T};
+function render(){
+  drawOffers();drawCtr();
+  [...$('tabs').children].forEach(b=>b.classList.toggle('on',+b.dataset.r===range));
+  let cut=null;if(range){const d=new Date();d.setDate(d.getDate()-range+1);cut=new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
+  const rows=[];
+  Object.keys(data.days).sort().reverse().forEach(k=>{if(cut&&k<cut)return;for(const id in data.days[k])if(offer(id))rows.push({k,id,e:data.days[k][id]})});
+  const sel=rows.filter(r=>view==='all'||r.id===view);
+  const T=sum(sel);
+  $('kpis').innerHTML=[['Pickup rate',pct(T.p,T.d),'pickups ÷ dials'],['DQ rate',pct(T.q,T.p),'DQs ÷ pickups'],['Pitch rate',pct(T.t,T.p),'pitches ÷ pickups'],['Set rate',pct(T.s,T.t),'sets ÷ pitches'],['Dials per set',T.s?(T.d/T.s).toFixed(1):'–','dials ÷ sets']]
+   .map(([a,b,c])=>`<div class="k"><span>${a}</span><b>${b}</b><span>${c}</span></div>`).join('');
+  const mx=Math.max(T.d,1);
+  $('fun').innerHTML=F.map(([k,n])=>`<div><span>${n}</span><span class="bar"><i style="width:${T[k]/mx*100}%"></i></span><b>${T[k]}</b></div>`).join('');
+  // comparison
+  $('cmpCard').style.display=data.offers.length>1?'':'none';
+  $('cmp').innerHTML=`<tr><th>Offer</th><th>Dials</th><th>Pickups</th><th>Pitches</th><th>Sets</th><th>Pickup %</th><th>Set %</th><th>Dials/set</th></tr>`+
+   data.offers.map(o=>{const t=sum(rows.filter(r=>r.id===o.id));return `<tr><td>${esc(o.name)}</td><td>${t.d}</td><td>${t.p}</td><td>${t.t}</td><td><b>${t.s}</b></td><td>${pct(t.p,t.d)}</td><td>${pct(t.s,t.t)}</td><td>${t.s?(t.d/t.s).toFixed(1):'–'}</td></tr>`}).join('');
+  // history
+  $('tbl').innerHTML=sel.length?`<tr><th>Date</th><th class="l">Offer</th>${F.map(([,n])=>`<th>${n}</th>`).join('')}<th>Pickup %</th><th>Set %</th><th></th></tr>`+
+   sel.map(({k,id,e})=>`<tr><td>${k}</td><td class="l">${esc(offer(id).name)}</td>${F.map(([f])=>`<td>${e[f]||0}</td>`).join('')}<td>${pct(e.p,e.d)}</td><td>${pct(e.s,e.t)}</td><td><button data-del="${k}|${id}" aria-label="Delete ${k}">✕</button></td></tr>`).join('')
+   :'<tr><td class="empty" colspan="10">No entries in this range. Add today\'s numbers above.</td></tr>';
+}
+// backup
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1e3)}
+$('exp').onclick=()=>download(`setter-tracker-${today()}.json`,JSON.stringify(data,null,2),'application/json');
+$('expcsv').onclick=()=>{
+  const L=['date,offer,dials,pickups,dq,pitches,sets'];
+  Object.keys(data.days).sort().forEach(k=>{for(const id in data.days[k]){const o=offer(id);if(!o)continue;const e=data.days[k][id];L.push([k,'"'+o.name.replace(/"/g,'""')+'"',...F.map(([f])=>e[f]||0)].join(','))}});
+  download(`setter-tracker-${today()}.csv`,L.join('\n'),'text/csv')};
+$('imp').onclick=()=>$('file').click();
+$('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const v=JSON.parse(r.result);if(!Array.isArray(v.offers)||!v.offers.length||typeof v.days!=='object'||!v.days)throw 0;
+    if(!confirm('Replace everything in this browser with the imported file?'))return;
+    if(!v.offers.some(o=>o.id===v.active))v.active=v.offers[0].id;data=v;view='all';save();render()}catch(x){alert('That file is not a valid tracker export.')}};
+  r.readAsText(f);e.target.value=''};
+render();
+</script>
+</body>
+</html>
