@@ -10,7 +10,11 @@ A free, single-file data tracker for appointment setters. Log dials, pickups, DQ
 1. Click **Code → Download ZIP** on this repo (or save `index.html`).
 2. Double-click `index.html`. Done. It works offline.
 
-**Option B: get your own live link (works on your phone)**
+**Option B: deploy on Vercel (free, works on your phone)**
+1. Go to [vercel.com/new](https://vercel.com/new), sign in with GitHub and **Import** this repo (or your fork).
+2. Leave every setting as is (no framework, no build command) and click **Deploy**. You get a live link in about 20 seconds.
+
+**Option C: GitHub Pages**
 1. Click **Fork** (top right) to copy this repo to your GitHub.
 2. In your fork: **Settings → Pages → Build and deployment → Deploy from a branch**, choose `main` / `(root)`, **Save**.
 3. After about a minute your tracker is live at `https://<your-username>.github.io/Setter-Data-Tracker-/`. Bookmark it or use "Add to Home Screen" on your phone.
